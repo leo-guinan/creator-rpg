@@ -5,6 +5,7 @@ import { Save, RefreshCw, Upload, GripVertical, HelpCircle } from 'lucide-react'
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@radix-ui/react-tooltip';
 import { saveCharacter } from '@/app/actions/character'
+import Image from 'next/image';
 
 type Skill = {
     name: string;
@@ -90,7 +91,10 @@ const CharacterSheet: React.FC = () => {
             indieHackerProficiencies
         }
 
+        console.log('characterData', characterData)
+
         const result = await saveCharacter(characterData)
+
         if (result.success) {
             alert('Character sheet saved!')
             // Clear the form
@@ -177,7 +181,6 @@ const CharacterSheet: React.FC = () => {
     };
 
     const PrioritizedList: React.FC<{ proficiencies: Proficiency[], setProficiencies: React.Dispatch<React.SetStateAction<Proficiency[]>>, title: string }> = ({ proficiencies, setProficiencies, title }) => {
-        console.log("PrioritizedList", proficiencies, setProficiencies, title)
         return (
             <DragDropContext onDragEnd={(result) => onDragEnd(result, setProficiencies)}>
                 <Droppable droppableId={title}>
@@ -267,7 +270,7 @@ const CharacterSheet: React.FC = () => {
                 <h2 className="text-2xl font-semibold mb-4">Profile Picture</h2>
                 <div className="flex items-center space-x-4">
                     {profilePicture && (
-                        <img src={profilePicture} alt="Profile" className="w-32 h-32 rounded-full object-cover" />
+                        <Image src={profilePicture} alt="Profile" className="w-32 h-32 rounded-full object-cover" width={100} height={100} />
                     )}
                     <div>
                         <input
@@ -350,13 +353,13 @@ const CharacterSheet: React.FC = () => {
                 <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-4" role="alert">
                     <p className="font-bold">Hear ye, brave adventurer!</p>
                     <p>
-                        The Dungeon Master speaks: "In the realm of creation and innovation, your path is shaped by the skills you hone and the passions you nurture. Before you lies a tapestry of proficiencies, each a thread in the grand design of your journey.
+                        The Dungeon Master speaks: &quot;In the realm of creation and innovation, your path is shaped by the skills you hone and the passions you nurture. Before you lies a tapestry of proficiencies, each a thread in the grand design of your journey.&quot;
                     </p>
                     <p className="mt-2">
                         Arrange these skills by importance, for they shall guide your quests. Drag the proficiencies to reorder them, and adjust the sliders to set your current skill level from 0 to 10. Your interest in each - be it Passionate, Curious, or Indifferent - will determine the challenges you face and the rewards you reap.
                     </p>
                     <p className="mt-2">
-                        Choose wisely, for in this world of Creators and Indie Hackers, your unique combination of skills and interests will forge your destiny!"
+                        Choose wisely, for in this world of Creators and Indie Hackers, your unique combination of skills and interests will forge your destiny!&quot;
                     </p>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">

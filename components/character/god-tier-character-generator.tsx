@@ -1,26 +1,22 @@
 'use client'
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Save, RefreshCw, Upload, HelpCircle } from 'lucide-react';
 import { Tooltip } from '@/components/ui/tooltip';
-import { saveGodTierCharacter } from '@/app/actions/character'
+import { saveGodTierCharacter, GodTierCharacterData, GodTierSkillData as SaveSkill, GodTierProficiencyData as SaveProficiency } from '@/app/actions/character'
+import Image from 'next/image';
+import { useSearchParams } from 'next/navigation';
 
-type Skill = {
-  name: string;
-  question: string;
-  answer: string;
-};
-
-type Proficiency = {
-  name: string;
-  question: string;
-  answer: string;
-  interestQuestion: string;
-  interestAnswer: string;
-};
+type Skill = SaveSkill;
+type Proficiency = SaveProficiency;
 
 const GodTierCharacterSheet: React.FC = () => {
+    const searchParams = useSearchParams();
+
   const [name, setName] = useState('');
   const [age, setAge] = useState('');
+  const [email, setEmail] = useState('');
+  const [isEmailEditable, setIsEmailEditable] = useState(false);
+
   const [background, setBackground] = useState('');
   const [profilePicture, setProfilePicture] = useState<string | null>(null);
   
@@ -67,23 +63,34 @@ const GodTierCharacterSheet: React.FC = () => {
       i === index ? { ...prof, [field]: value } : prof
     ));
   };
+  
+  useEffect(() => {
+    const emailParam = searchParams.get('email');
+    if (emailParam) {
+        setEmail(emailParam);
+        setIsEmailEditable(false);
+    } else {
+        setIsEmailEditable(true);
+    }
+}, [searchParams]);
 
   const handleSave = async () => {
-    const characterData = {
+    const characterData: GodTierCharacterData = {
       name,
       age,
       background,
       profilePicture,
+      email,
       creatorSkills,
       indieHackerSkills,
       creatorProficiencies,
       indieHackerProficiencies,
     }
-
+    console.log('characterData', characterData)
     const result = await saveGodTierCharacter(characterData)
 
     if (result.success) {
-      alert(`God-Tier Character saved! Character ID: ${result.characterId}`)
+      alert(`God-Tier Character saved!`)
     } else {
       alert(`Error saving God-Tier Character: ${result.error}`)
     }
@@ -136,6 +143,14 @@ const GodTierCharacterSheet: React.FC = () => {
             className="p-2 border rounded"
           />
         </div>
+        <input
+                    type="email"
+                    placeholder="Email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    readOnly={!isEmailEditable}
+                    className={`w-full p-2 border rounded mt-4 ${isEmailEditable ? '' : 'bg-gray-100'}`}
+                />
         <textarea
           placeholder="Share the epic tale of your background, brave creator and innovator!"
           value={background}
@@ -149,7 +164,7 @@ const GodTierCharacterSheet: React.FC = () => {
         <h2 className="text-2xl font-semibold mb-4">Profile Picture</h2>
         <div className="flex items-center space-x-4">
           {profilePicture && (
-            <img src={profilePicture} alt="Profile" className="w-32 h-32 rounded-full object-cover" />
+            <Image src={profilePicture} alt="Profile" className="w-32 h-32 rounded-full object-cover" width={100} height={100} />
           )}
           <div>
             <input
